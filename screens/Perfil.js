@@ -1,22 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, ImageBackground, ScrollView, Text, TouchableOpacity, Button } from 'react-native';
+import { View, StyleSheet, Image, ScrollView, Text, TouchableOpacity, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Header from '../components/HeaderBlanco';
 import { Animated, Easing } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useIsFocused } from '@react-navigation/native';
-import AllPubliaciones from '../components/AllPublicaciones'
-import Empieza from '../components/Empieza'
-import ConoceGastronomia from '../components/ConoceGastronomia'
-import InputSearch from '../components/InputSearch'
-import AllGastronomia from '../components/AllGastronomia';
-import MoreTextGastronomia from '../components/MoreTextGastronomia'
-import MoreTextPublicaciones from '../components/MoreTextPublicaciones'
-import AllAlojamientos from '../components/AllAlojamientos';
-import MoreTextAlojamientos from '../components/MoreTextAlojamientos';
-import ConoceAlojamientos from '../components/ConoceAlojamientos'
-import AllCuentas from '../components/AllCuentas'
+import Formularios from '../components/Formularios'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import PerfilComponent from '../components/PerfilComponent';
+import Logout from '../components/Logout'
+
 export default function Home() {
 
 
@@ -44,7 +38,23 @@ export default function Home() {
         inputRange: [0, 1],
         outputRange: [200, 0],
     });
+    const [userData, setUserData] = useState(null);
 
+    useEffect(() => {
+        getUserData();
+    }, []);
+
+    const getUserData = async () => {
+        try {
+            const userDataJSON = await AsyncStorage.getItem('user');
+            if (userDataJSON) {
+                const userDataObj = JSON.parse(userDataJSON);
+                setUserData(userDataObj);
+            }
+        } catch (error) {
+            console.error('Error getting user data:', error);
+        }
+    };
 
 
 
@@ -55,19 +65,23 @@ export default function Home() {
 
 
                 <Animated.View style={[{ transform: [{ translateY }] }]}>
-                    <InputSearch />
+                    {userData ? (
 
-                    <MoreTextGastronomia />
-                    <AllGastronomia />
-                    <ConoceGastronomia />
-                    <MoreTextPublicaciones />
 
-                    <AllPubliaciones />
-                    <Empieza />
-                    <ConoceAlojamientos />
-                    <MoreTextAlojamientos />
-                    <AllAlojamientos />
-                    <AllCuentas />
+                        <>
+                            <PerfilComponent />
+                            <Logout />
+                        </>
+
+                    ) : (
+                        <>
+
+
+                            <Formularios />
+                        </>
+
+
+                    )}
 
                 </Animated.View>
 
@@ -94,6 +108,7 @@ const styles = StyleSheet.create({
     },
 
     espacio: {
-        height: 200
-    }
+        height: 100
+    },
+
 });

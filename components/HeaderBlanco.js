@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Image, Text, TouchableOpacity, } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useNavigation } from '@react-navigation/native';
 import image from '../assets/Cloud.png'
@@ -13,7 +14,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import logo from '../assets/logo.png';
 import Modal from 'react-native-modal';
-
+import { FontAwesome5 } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
+import PerfilComponent from './PerfilComponent'
 export default function Header() {
     const [isModalVisible, setModalVisible] = useState(false);
     const [name, setName] = useState('');
@@ -25,14 +28,25 @@ export default function Header() {
 
     const goToHome = () => {
         navigation.navigate('Home');
-        setModalVisible(!isModalVisible);
+        setModalVisible(false);
+    };
+    const goToAtractivos = () => {
+        navigation.navigate('AllPublicacionesScreen');
+        setModalVisible(false);
     };
 
-    const goToNotas = () => {
-        navigation.navigate('NotasScreen');
-        setModalVisible(!isModalVisible);
+    const goToGastronomias = () => {
+        navigation.navigate('AllGastronomiasScreen');
+        setModalVisible(false);
     };
-
+    const goToAlojamientos = () => {
+        navigation.navigate('AllAlojamientosSreen');
+        setModalVisible(false);
+    };
+    const goToLogin = () => {
+        navigation.navigate('Perfil');
+        setModalVisible(false);
+    };
 
     const openLinkedInProfile = () => {
         const linkedInURL = 'https://www.linkedin.com/in/juan-rivera-9ba866215/'; // Reemplaza con tu URL de LinkedIn
@@ -40,7 +54,7 @@ export default function Header() {
     };
 
     const openWebsite = () => {
-        const websiteURL = 'https://www.juan-rivera-developer.com/'; // Reemplaza con tu URL del sitio web
+        const websiteURL = 'https://www.juan-rivera-developer.net'; // Reemplaza con tu URL del sitio web
         Linking.openURL(websiteURL);
     };
 
@@ -50,43 +64,42 @@ export default function Header() {
         Linking.openURL(whatsappURL);
     };
 
-    const handleRemoveName = async () => {
+    const [userData, setUserData] = useState(null);
+
+    useEffect(() => {
+        getUserData();
+    }, []);
+
+    const getUserData = async () => {
         try {
-            await AsyncStorage.removeItem('Actividades');
-            console.log('Name removed successfully');
-            setName('');
+            const userDataJSON = await AsyncStorage.getItem('user');
+            if (userDataJSON) {
+                const userDataObj = JSON.parse(userDataJSON);
+                setUserData(userDataObj);
+            }
         } catch (error) {
-            console.error('Error removing name:', error);
+            console.error('Error getting user data:', error);
         }
     };
-    useEffect(() => {
-        const currentDate = new Date();
-        const currentHour = currentDate.getHours();
 
-        if (currentHour >= 6 && currentHour < 13) {
-            setGreeting('Buenos días');
-        } else if (currentHour >= 13 && currentHour < 19) {
-            setGreeting('Buenas tardes');
-        } else {
-            setGreeting('Buenas noches');
-        }
-    }, []);
     return (
-        <LinearGradient colors={['#320D5B', '#320D5B',]} style={styles.container} start={{ x: 0, y: 0 }}
+        <LinearGradient colors={['#F80050', '#F80050',]} style={styles.container} start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}>
 
 
-            <View style={styles.container}>
+            <View >
 
-                <TouchableOpacity onPress={toggleModal}>
-                    <View style={styles.logoContainer} >
-                        <View style={styles.logoContainer} >
-                            <Image source={logo} style={styles.logo} />
-                            <Text style={styles.logoText}>{greeting}</Text>
-                        </View>
+
+                <View style={styles.logoContainer} >
+                    <TouchableOpacity onPress={goToHome} style={styles.logoContainer} >
+                        <Image source={logo} style={styles.logo} />
+                        <Text style={styles.logoText}>Turismo Salta</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={toggleModal}>
                         <EvilIcons name="navicon" size={24} color="#ffff" />
-                    </View>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                </View>
+
 
 
 
@@ -106,38 +119,62 @@ export default function Header() {
 
                         <Image source={image} style={styles.img} />
                         <View style={styles.navBtns}>
+
+                            {userData &&
+                                <PerfilComponent />
+                            }
+
                             <TouchableOpacity onPress={goToHome} style={styles.btnNav}>
-                                <FontAwesome name="home" size={20} color='#320D5B' />
+                                <FontAwesome name="home" size={20} color='#F80050' />
                                 <Text style={styles.buttonText}>Home</Text>
                             </TouchableOpacity>
+                            <TouchableOpacity onPress={goToAtractivos} style={styles.btnNav}>
 
 
-                            <TouchableOpacity onPress={goToNotas} style={styles.btnNav}>
+                                <MaterialCommunityIcons name="map-marker-star" size={20} color='#F80050' />
+                                <Text style={styles.buttonText}>Atractivos</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={goToGastronomias} style={styles.btnNav}>
 
-                                <MaterialIcons name="description" size={20} color='#320D5B' />
 
-                                <Text style={styles.buttonText}>Crear</Text>
+                                <MaterialIcons name="no-meals" size={20} color='#F80050' />
+                                <Text style={styles.buttonText}>Gastronomia</Text>
                             </TouchableOpacity>
 
+                            <TouchableOpacity onPress={goToAlojamientos} style={styles.btnNav}>
+                                <Ionicons name="bed" size={20} color='#F80050' />
+                                <Text style={styles.buttonText}>Alojamientos</Text>
+                            </TouchableOpacity>
+
+
+                            {!userData &&
+                                <TouchableOpacity onPress={goToLogin} style={styles.btnNav}>
+
+                                    <FontAwesome5 name="user-alt" size={18} color='#F80050' />
+                                    <Text style={styles.buttonText}>Ingresar</Text>
+                                </TouchableOpacity>
+                            }
                             <TouchableOpacity onPress={toggleModal} style={styles.btnNav}>
-                                <MaterialIcons name="logout" size={20} color="#320D5B" />
+
+                                <MaterialIcons name="logout" size={20} color="#F80050" />
                                 <Text style={styles.buttonText}>Cerrar</Text>
                             </TouchableOpacity>
 
                             <Text style={styles.text}>Contacto del desarrollador</Text>
                             <View style={styles.social}>
                                 <TouchableOpacity onPress={openLinkedInProfile} style={styles.btnNav}>
-                                    <FontAwesome name="linkedin" size={20} color="#320D5B" />
+                                    <FontAwesome name="linkedin" size={20} color="#F80050" />
 
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={openWebsite} style={styles.btnNav}>
-                                    <FontAwesome name="globe" size={20} color="#320D5B" />
+                                    <FontAwesome name="globe" size={20} color="#F80050" />
 
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={openWhatsAppChat} style={styles.btnNav}>
-                                    <FontAwesome name="whatsapp" size={20} color="#320D5B" />
+                                    <FontAwesome name="whatsapp" size={20} color="#F80050" />
 
                                 </TouchableOpacity>
+
                             </View>
                         </View>
 
@@ -162,15 +199,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         flexDirection: 'column',
         padding: 20,
-        height: 120,
+        height: 100,
         paddingTop: 60,
         justifyContent: 'center',
-        borderRadius: 16,
+
         width: '100%',
         position: 'absolute',
         top: 0,
         width: '100%',
         zIndex: 1,
+
 
 
     },
@@ -182,13 +220,19 @@ const styles = StyleSheet.create({
         padding: 2,
     },
     logo: {
-        width: 23,
-        height: 23,
+        width: 20,
+        height: 20,
 
 
     },
     logoText: {
         color: '#fff',
+        fontSize: 17,
+        fontWeight: 'bold',
+    },
+    logoDate: {
+        color: 'rgba(0, 0, 0, 0.6)',
+        padding: 20,
         fontSize: 17,
         fontWeight: 'bold',
     },
@@ -235,11 +279,11 @@ const styles = StyleSheet.create({
     },
     img: {
         width: '100%',
-        height: 150,
+        height: 160,
         objectFit: 'cover'
     },
     navBtns: {
-        marginTop: 30
+        marginTop: 10
     },
 
     btnNav: {
@@ -260,7 +304,7 @@ const styles = StyleSheet.create({
     },
     text: {
         textAlign: 'center',
-        marginTop: 160
+        marginTop: 60
     },
     modal: {
         margin: 0,

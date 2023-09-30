@@ -6,20 +6,9 @@ import Header from '../components/HeaderBlanco';
 import { Animated, Easing } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useIsFocused } from '@react-navigation/native';
-import AllPubliaciones from '../components/AllPublicaciones'
-import Empieza from '../components/Empieza'
-import ConoceGastronomia from '../components/ConoceGastronomia'
-import InputSearch from '../components/InputSearch'
-import AllGastronomia from '../components/AllGastronomia';
-import MoreTextGastronomia from '../components/MoreTextGastronomia'
-import MoreTextPublicaciones from '../components/MoreTextPublicaciones'
-import AllAlojamientos from '../components/AllAlojamientos';
-import MoreTextAlojamientos from '../components/MoreTextAlojamientos';
-import ConoceAlojamientos from '../components/ConoceAlojamientos'
-import AllCuentas from '../components/AllCuentas'
-export default function Home() {
 
 
+export default function SearchScreen() {
 
     const [animationValue] = useState(new Animated.Value(0));
     const startAnimation = () => {
@@ -55,19 +44,9 @@ export default function Home() {
 
 
                 <Animated.View style={[{ transform: [{ translateY }] }]}>
-                    <InputSearch />
 
-                    <MoreTextGastronomia />
-                    <AllGastronomia />
-                    <ConoceGastronomia />
-                    <MoreTextPublicaciones />
 
-                    <AllPubliaciones />
-                    <Empieza />
-                    <ConoceAlojamientos />
-                    <MoreTextAlojamientos />
-                    <AllAlojamientos />
-                    <AllCuentas />
+
 
                 </Animated.View>
 
@@ -87,13 +66,11 @@ export default function Home() {
 const styles = StyleSheet.create({
 
     scrollContainer: {
-        backgroundColor: '#fefefe',
-        marginTop: 100,
-        paddingTop: 20,
+        backgroundColor: '#ffff',
 
     },
 
     espacio: {
-        height: 200
+        height: 100
     }
 });
